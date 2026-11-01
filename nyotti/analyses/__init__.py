@@ -32,6 +32,12 @@ def usd_notional(f):
     return np.where(usd_quoted, f.foreignnotional.abs(), f.foreignnotional.abs() * f.btc_price)
 
 
+def btc_value(f):
+    """BTC value of each fill for every contract type. homeNotional is BTC only for XBT contracts (XRP for
+    XRPU18), but execCost is booked in satoshis for inverse, linear and quanto contracts alike."""
+    return f.execcost.abs() / 1e8
+
+
 def match_lots(t, lifo=False):
     """Pair every closing contract with an opening one, oldest first (FIFO) or newest first (LIFO).
 

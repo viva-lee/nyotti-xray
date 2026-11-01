@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from . import atlas
-from .analyses import Context, usd_notional
+from .analyses import Context, btc_value, usd_notional
 from .analyses import behavior, cases, habits, lenses, money, position, proof, review, risk
 from .judge import load_lenses
 from .paths import CACHE, SITE_DATA
@@ -48,7 +48,7 @@ def replay(ctx):
     dep = w[w.transacttype == 'Deposit']
     daily = w[w.transacttype == 'RealisedPNL'].groupby('day').btc.sum()
     liq = ctx.f[ctx.f.text.astype(str).str.contains('Liquidation')]
-    big = liq.assign(btc=liq.homenotional.abs()).groupby([liq.ts.dt.floor('1min'), liq.symbol.astype(str)]).btc.sum()
+    big = liq.assign(btc=btc_value(liq)).groupby([liq.ts.dt.floor('1min'), liq.symbol.astype(str)]).btc.sum()
     (big_ts, big_sym), big_btc = big.idxmax(), big.max()
     first_wd = wd.day.min()
     events = [
@@ -59,7 +59,7 @@ def replay(ctx):
          'text': {'en': f'First withdrawal, {(first_wd - dep.day.min()).days} days in: {-wd.btc.iloc[0]:.2f} BTC.',
                   'ko': f'시작 {(first_wd - dep.day.min()).days}일 만의 첫 출금: {-wd.btc.iloc[0]:.2f} BTC.'}},
         {'i': at(big_ts),
-         'text': {'en': f'Largest liquidation: a {big_sym} position worth {big_btc:.1f} BTC.',
+         'text': {'en': f'Largest liquidation: {big_btc:.1f} BTC of {big_sym}.',
                   'ko': f'가장 큰 강제청산: {big_btc:.1f} BTC 규모의 {big_sym} 포지션.'}},
         {'i': at(daily.idxmax() + pd.Timedelta(hours=12)),
          'text': {'en': f'Best realised day: +{daily.max():.1f} BTC.', 'ko': f'실현손익 최고의 날: +{daily.max():.1f} BTC.'}},

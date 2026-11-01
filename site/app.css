@@ -208,6 +208,7 @@ h1 em { font-style: normal; color: var(--pink); }
   border: 1px solid var(--line-2); border-radius: 999px;
 }
 .atlas-link:hover { border-color: var(--pink); }
+.brand, .atlas-link, .lang button { white-space: nowrap; }
 
 /* about */
 .about { margin-top: 64px; }
@@ -235,4 +236,10 @@ h1 em { font-style: normal; color: var(--pink); }
   #replay { min-height: 420px; }
   .counters { left: 14px; top: 12px; }
   #lens { height: 340px; }
+}
+@media (max-width: 400px) {
+  .top { gap: 8px; padding: 12px; }
+  .top-right { gap: 8px; }
+  .brand { letter-spacing: 0.06em; gap: 5px; }
+  .atlas-link .more { display: none; }
 }

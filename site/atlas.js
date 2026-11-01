@@ -25,7 +25,7 @@
     en: {
       notice: 'Past records only. Not investment advice.', replay: 'Replay', index: 'Index', close: 'Close',
       heroTitle: 'One trading record, read thirty ways',
-      heroSub: (m) => `In September 2026 the trader known as Wonyotti (BitMEX account aoa) published every fill he made from 2018 to 2021: ${m.fills.toLocaleString('en-US')} of them, each since found on the exchange's own public tape. This atlas reads that record thirty ways. The first twenty findings were measured again another way, and ten readings are new.`,
+      heroSub: (m, v) => `In September 2026 the trader known as Wonyotti (BitMEX account aoa) published every fill he made from 2018 to 2021: ${m.fills.toLocaleString('en-US')} of them. ${v.exact.toLocaleString('en-US')} are on the exchange's own public tape with every field matching; the other ${v.not_found} are liquidations and self-trades, which the tape leaves out. Ten of the thirty readings are new.`,
       heroCheck: 'The first twenty, measured again:',
       heroCount: (k, n) => ({ holds: `${n} hold`, nuance: `${n} gained a nuance`, revised: `${n} revised` }[k]),
       heroUnit: 'Each dot is one of 10,169 Bitcoin decisions, at its time and price.',
@@ -47,7 +47,7 @@
     ko: {
       notice: '과거 기록 분석일 뿐, 투자 조언이 아닙니다.', replay: '리플레이', index: '목차', close: '닫기',
       heroTitle: '하나의 매매 기록, 서른 번의 판독',
-      heroSub: (m) => `2026년 9월, 워뇨띠(BitMEX 계정 aoa)가 2018~2021년 체결 전부를 공개했다. ${m.fills.toLocaleString('ko-KR')}건이고, 하나도 빠짐없이 거래소 공개 테이프에서 다시 찾았다. 이 아틀라스는 그 기록을 서른 가지로 판독한다. 처음 발견 20개는 다른 방법으로 다시 쟀고, 10개는 새 판독이다.`,
+      heroSub: (m, v) => `2026년 9월, 워뇨띠(BitMEX 계정 aoa)가 2018~2021년 체결 전부를 공개했다. ${m.fills.toLocaleString('ko-KR')}건 중 ${v.exact.toLocaleString('ko-KR')}건이 거래소 공개 테이프와 모든 필드까지 일치했고, 나머지 ${v.not_found}건은 원래 테이프에 실리지 않는 강제청산과 자전거래다. 서른 가지 판독 중 10개는 새 판독이다.`,
       heroCheck: '처음 20개를 다시 잰 결과:',
       heroCount: (k, n) => ({ holds: `유지 ${n}`, nuance: `단서 추가 ${n}`, revised: `수정 ${n}` }[k]),
       heroUnit: '점 하나가 비트코인 결정 하나다(10,169개). 결정한 시각과 가격에 놓였다.',
@@ -108,18 +108,23 @@
       if (!gl) document.body.classList.add('no-gl');
       build();
       measure();
-      bindScroll();
       bindPointer();
       bindKeys();
-      const hash0 = decodeURIComponent(location.hash.slice(1));
-      if (hash0 && CARD[hash0]) {
-        document.getElementById(hash0)?.scrollIntoView({ behavior: 'instant', block: 'start' });
-        activate(hash0, true);
-      } else {
-        activate('hero', false);
-      }
-      window.addEventListener('resize', () => { measure(); if (current) activate(current, true); }, { passive: true });
-      window.__atlas = { activate, order: () => ORDER, ready: true };
+      // On phones the hero copy decides where the silhouette starts, so let the web fonts land first (at most a second).
+      const fontsIn = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1000))]) : null;
+      return Promise.resolve(fontsIn).then(() => {
+        measure();
+        bindScroll();
+        const hash0 = decodeURIComponent(location.hash.slice(1));
+        if (hash0 && CARD[hash0]) {
+          document.getElementById(hash0)?.scrollIntoView({ behavior: 'instant', block: 'start' });
+          activate(hash0, true);
+        } else {
+          activate('hero', false);
+        }
+        window.addEventListener('resize', () => { measure(); if (current) activate(current, true); }, { passive: true });
+        window.__atlas = { activate, order: () => ORDER, ready: true };
+      });
     });
 
   // ------------------------------------------------------------------ geometry
@@ -282,10 +287,25 @@
 
   SCENES.hero = (T_, S) => {
     // Full-bleed on the opening screen: the price silhouette keeps to the lower part, under the headline.
-    const R = S.w > stage.w ? inset(S, { l: 24, r: 70, t: Math.round(S.h * (view.w >= 960 ? 0.4 : 0.62)), b: 40 }) : inset(S, { l: 24, r: 70, t: 30, b: 46 });
+    const wide = view.w >= 960, full = S.w > stage.w;
+    let R = full ? inset(S, { l: 24, r: 70, t: Math.round(S.h * (wide ? 0.4 : 0.62)), b: 40 }) : inset(S, { l: 24, r: 70, t: 30, b: 46 });
     const ps = D.px;
     let lo = Infinity, hi = 0;
     for (const p of ps) { if (p < lo) lo = p; if (p > hi) hi = p; }
+    if (full) {
+      // The copy runs long on phones and short laptop screens: lower the silhouette until the dots that pass under
+      // the copy clear its verdict row, keeping a third of the screen for it (a quarter on phones).
+      const right = $('.hero-copy').getBoundingClientRect().right;
+      const under = $('#hero-verdicts').getBoundingClientRect().bottom + window.scrollY + 16;
+      const x0 = timeX(R);
+      let peak = lo;
+      for (let i = 0; i < ps.length; i++) if (ps[i] > peak && x0(D.t[i]) <= right) peak = ps[i];
+      const f = 1 - Math.log(peak / (lo * 0.92)) / Math.log((hi * 1.06) / (lo * 0.92)); // where that peak sits, from the top
+      const bottom = R.y + R.h, need = (under - bottom * f) / (1 - f);
+      const y0 = Math.round(Math.min(Math.max(R.y, need), bottom - S.h * (wide ? 0.34 : 0.24)));
+      $('.hero').classList.toggle('tight', wide && need > R.y);
+      R = { ...R, y: y0, h: bottom - y0 };
+    }
     const x = timeX(R), y = logS(lo * 0.92, hi * 1.06, R.y + R.h, R.y);
     for (let i = 0; i < D.t.length; i++) {
       put(T_, OFF.decision + i, x(D.t[i]), y(D.px[i]), 1.4 + Math.min(4.5, Math.sqrt(D.usd[i]) * 0.85), D.side[i] ? C.buy : C.sell, 0.62);
@@ -1104,7 +1124,7 @@
     $$('[data-t]').forEach((el) => { el.textContent = t(el.dataset.t); });
     $$('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.lang === lang));
     $('#hero-title').textContent = t('heroTitle');
-    $('#hero-sub').textContent = t('heroSub')(INS.meta);
+    $('#hero-sub').textContent = t('heroSub')(INS.meta, CARD.verified.numbers);
     const v = verdictCounts();
     $('#hero-verdicts').innerHTML = `<span class="vsum">${esc(t('heroCheck'))}</span>` +
       ['holds', 'nuance', 'revised'].map((k) => `<span class="vchip ${k}">${ICON[k]}${esc(t('heroCount')(k, v[k]))}</span>`).join('');

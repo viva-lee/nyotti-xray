@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pandas as pd  # noqa: E402
 
 from nyotti import build, describe  # noqa: E402
-from nyotti.analyses import bucket, match_lots, wmedian  # noqa: E402
+from nyotti.analyses import btc_value, bucket, match_lots, wmedian  # noqa: E402
 from nyotti.analyses.lenses import against_vs_chance  # noqa: E402
 from nyotti.analyses.risk import distance  # noqa: E402
 from nyotti.judge import CHECKS  # noqa: E402
@@ -139,6 +139,12 @@ class Account(unittest.TestCase):
         self.assertEqual(list(bucket([-0.25, -0.2, 0.25, 0.85, 1.15, 1.2])), [0, 1, 2, 3, 3, 4])
         self.assertEqual(describe.exposure(-0.25).split(' ')[0:3], ['a', 'net', 'short'])
         self.assertTrue(describe.exposure(1.15).startswith('about the same'))
+
+    def test_btc_value_is_exec_cost_for_every_contract(self):
+        # The two largest liquidation minutes: homeNotional is BTC for XBTUSD but XRP for XRPU18.
+        f = pd.DataFrame({'symbol': ['XBTUSD', 'XRPU18'], 'execcost': [-8309386200.0, 4280760000.0],
+                          'homenotional': [83.093862, -330000.0], 'foreignnotional': [-599999.0, 42.8076]})
+        self.assertEqual([round(v, 6) for v in btc_value(f)], [83.093862, 42.8076])
 
 
 if __name__ == '__main__':

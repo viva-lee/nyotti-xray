@@ -9,7 +9,7 @@
   // ------------------------------------------------------------------ text
   const T = {
     en: {
-      notAdvice: 'Unofficial · Past records only · Not investment advice', atlas: 'Atlas: 30 readings',
+      notAdvice: 'Unofficial · Past records only · Not investment advice', atlas: 'Atlas', atlasMore: ': 30 readings',
       headline: (m) => `${m.fills.toLocaleString('en-US')} fills. Four years. <em>Replayed, verified, x-rayed.</em>`,
       sub: 'In September 2026 the Korean trader known as Wonyotti (BitMEX account aoa) published his full 2018-2021 execution history. This page replays it, checks every fill against BitMEX\'s own public tape, and has Jev read each of his 10,169 Bitcoin decisions. It describes what happened. It does not say what anyone should do.',
       realised: 'realised PnL', withdrawn: 'withdrawn', fillsReplayed: 'fills replayed',
@@ -27,7 +27,7 @@
       low: 'low', high: 'high',
     },
     ko: {
-      notAdvice: '비공식 · 과거 기록만 · 투자 조언 아님', atlas: '아틀라스: 판독 30개',
+      notAdvice: '비공식 · 과거 기록만 · 투자 조언 아님', atlas: '아틀라스', atlasMore: ': 판독 30개',
       headline: (m) => `체결 ${m.fills.toLocaleString('ko-KR')}건. 4년. <em>재생하고, 검증하고, 투시한다.</em>`,
       sub: '2026년 9월, 워뇨띠(BitMEX 계정 aoa)가 2018~2021년 체결 내역 전체를 공개했다. 이 페이지는 그 기록을 재생하고, 모든 체결을 BitMEX가 직접 공개한 체결 테이프와 대조하고, 비트코인 매매 결정 10,169개를 Jev가 하나씩 읽게 한다. 일어난 일을 설명할 뿐, 누구에게도 무엇을 하라고 말하지 않는다.',
       realised: '실현손익', withdrawn: '출금', fillsReplayed: '재생된 체결',

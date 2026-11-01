@@ -6,7 +6,7 @@ piece of a closed position. This module writes those units as compact columns. N
 import numpy as np
 import pandas as pd
 
-from .analyses import bucket
+from .analyses import btc_value, bucket
 from .analyses.behavior import add_entries
 from .analyses.position import drawdowns
 from .analyses.proof import tape_days
@@ -140,9 +140,9 @@ def short_hours(ctx):
 
 def liquidation_events(ctx):
     f = ctx.f
-    liq = f[f.text.astype(str).str.contains('Liquidation')]
+    liq = f[f.text.astype(str).str.contains('Liquidation')].assign(btc=btc_value)
     ev = (liq.groupby([liq.ts.dt.floor('1min'), liq.symbol.astype(str)])
-          .agg(qty=('lastqty', 'sum'), btc=('homenotional', lambda s: s.abs().sum())).reset_index())
+          .agg(qty=('lastqty', 'sum'), btc=('btc', 'sum')).reset_index())
     return [{'t': int((r.ts - T0) / pd.Timedelta(minutes=1)), 'sym': r.symbol, 'qty': float(r.qty), 'btc': round(float(r.btc), 3)}
             for r in ev.itertuples()]
 

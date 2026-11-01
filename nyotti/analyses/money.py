@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from . import bucket, card, fmt
+from . import btc_value, bucket, card, fmt
 
 
 def hedge(ctx):
@@ -245,8 +245,9 @@ def liquidations(ctx):
     liq = f[f.text.astype(str).str.contains('Liquidation')].copy()
     liq['usd'] = np.where(liq.symbol.astype(str).str.startswith('XBT') | liq.symbol.astype(str).str.contains('USD'),
                           liq.foreignnotional.abs(), np.nan)
+    liq['btc'] = btc_value(liq)
     ev = (liq.groupby([liq.ts.dt.floor('1min'), liq.symbol.astype(str)])
-          .agg(qty=('lastqty', 'sum'), btc=('homenotional', lambda s: s.abs().sum()), usd=('usd', 'sum'))
+          .agg(qty=('lastqty', 'sum'), btc=('btc', 'sum'), usd=('usd', 'sum'))
           .reset_index())
     by_year = ev.groupby(ev.ts.dt.year).size()
     after = ev[ev.ts.dt.year > 2018]
@@ -262,17 +263,20 @@ def liquidations(ctx):
         if counts[0] == 27 else {'en': 'Liquidations by year', 'ko': '연도별 강제청산'},
         {'value': str(counts[0]), 'unit': '', 'label': {'en': 'liquidation events in 2018', 'ko': '2018년 강제청산 횟수'}},
         {'en': f'{len(liq)} fills are marked "Liquidation": {len(ev)} events in all, {counts[0]} of them in 2018. '
-               f'The largest, on {biggest.ts:%Y-%m-%d}, closed {biggest.qty:,.0f} {biggest.symbol} contracts. After '
+               f'The largest, on {biggest.ts:%Y-%m-%d}, closed {biggest.qty:,.0f} {biggest.symbol} contracts worth '
+               f'{biggest.btc:.1f} BTC. After '
                f'{last18:%B %Y} there are only {len(after)}: {later_en}. These fills are also the only ones missing from '
                'the public tape, because a liquidation hands the position to the exchange\'s engine instead of '
                'trading on the book.',
          'ko': f'"Liquidation" 표시가 붙은 체결은 {len(liq)}건, 사건으로는 {len(ev)}번이고 그중 {counts[0]}번이 2018년이다. '
-               f'가장 컸던 {biggest.ts:%Y-%m-%d}에는 {biggest.symbol} {biggest.qty:,.0f}계약이 청산됐다. {last18:%Y년 %m월} '
+               f'가장 컸던 {biggest.ts:%Y-%m-%d}에는 {biggest.symbol} {biggest.qty:,.0f}계약({biggest.btc:.1f} BTC)이 청산됐다. '
+               f'{last18:%Y년 %m월} '
                f'이후로는 {len(after)}번뿐이다: {later_ko}. 이 체결들은 공개 테이프에서 빠진 유일한 체결이기도 하다. 강제청산은 '
                '호가창 거래가 아니라 거래소 청산 엔진으로 포지션을 넘기는 것이기 때문이다.'},
         {'type': 'bars', 'labels': {'en': years, 'ko': years}, 'values': counts, 'unit': 'events'},
         events=len(ev), fills=len(liq), by_year=dict(zip(years, counts)),
-        biggest={'day': str(biggest.ts.date()), 'symbol': biggest.symbol, 'contracts': float(biggest.qty)})
+        biggest={'day': str(biggest.ts.date()), 'symbol': biggest.symbol, 'contracts': float(biggest.qty),
+                 'btc': round(float(biggest.btc), 3)})
 
 
 def by_coin(ctx):
