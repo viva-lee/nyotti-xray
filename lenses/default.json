@@ -1,0 +1,109 @@
+{
+  "$comment": "Default lens pack. Each lens is one typed question Jev answers about every decision, all in one request per decision. label, label_ko and hint are UI-only. A lens with `check` has an answer code can compute, so its agreement rate is shown as a calibration check.",
+  "lenses": [
+    {
+      "key": "regime",
+      "label": "Market regime",
+      "label_ko": "시장 국면",
+      "hint": "What was the market doing when he acted?",
+      "type": "choice",
+      "instructions": "Which description best fits the market in `market_before` at the moment of the trade?",
+      "criteria": {
+        "uptrend": "A steady climb over days and weeks without a violent spike.",
+        "downtrend": "A steady decline over days and weeks without a violent crash.",
+        "range": "Sideways: no clear direction over the past week, ordinary volume.",
+        "selloff": "A sharp, fast drop in the last hours or day, often on heavy volume.",
+        "squeeze": "A sharp, fast rise in the last hours or day, often on heavy volume."
+      }
+    },
+    {
+      "key": "against_move",
+      "label": "Against the 24h move",
+      "label_ko": "24시간 흐름 역행",
+      "hint": "Bought after a fall, or sold after a rise",
+      "type": "noul",
+      "check": "against_move",
+      "instructions": "The trade in `action` goes against the 24-hour price move in `market_before.last_24_hours`: it bought after Bitcoin fell, or sold after Bitcoin rose.",
+      "criteria": {
+        "true": "Bought after a fall, or sold after a rise.",
+        "false": "Bought after a rise, sold after a fall, or the market was roughly flat."
+      }
+    },
+    {
+      "key": "adds_position",
+      "label": "Grows the position",
+      "label_ko": "포지션 확대",
+      "hint": "Opened, added, or flipped into something bigger",
+      "type": "noul",
+      "check": "adds_position",
+      "instructions": "Judging only from `action.effect_on_contracts`, the trade leaves his open contract position larger than it was before the trade. Ignore Bitcoin exposure.",
+      "criteria": {
+        "true": "He opened a new position, added to it, or flipped into a bigger position on the other side.",
+        "false": "He reduced or closed his position, or flipped into a smaller position on the other side."
+      }
+    },
+    {
+      "key": "panic",
+      "label": "Panic selling",
+      "label_ko": "패닉 매도장",
+      "hint": "Sharp fall on unusually heavy volume",
+      "type": "noul",
+      "instructions": "At the moment of the trade, `market_before` shows panic selling: a sharp fall on unusually heavy volume.",
+      "criteria": {
+        "true": "A sharp recent fall together with heavy or very heavy volume.",
+        "false": "No sharp recent fall, or the fall happened on normal or light volume."
+      }
+    },
+    {
+      "key": "euphoria",
+      "label": "Buying frenzy",
+      "label_ko": "급등 과열장",
+      "hint": "Sharp rise on unusually heavy volume",
+      "type": "noul",
+      "instructions": "At the moment of the trade, `market_before` shows a buying frenzy: a sharp rise on unusually heavy volume.",
+      "criteria": {
+        "true": "A sharp recent rise together with heavy or very heavy volume.",
+        "false": "No sharp recent rise, or the rise happened on normal or light volume."
+      }
+    },
+    {
+      "key": "knife",
+      "label": "Catching a falling knife",
+      "label_ko": "떨어지는 칼날 받기",
+      "hint": "Buying while the drop is still under way",
+      "type": "noul",
+      "instructions": "The trade in `action` buys into a fall that is still under way: Bitcoin is falling over the last 6 hours and the last 24 hours, and he is buying.",
+      "criteria": {
+        "true": "He bought while both the last 6 hours and the last 24 hours show Bitcoin falling.",
+        "false": "He sold, or Bitcoin was not falling over both windows."
+      }
+    },
+    {
+      "key": "after_pain",
+      "label": "Right after a loss",
+      "label_ko": "손실 직후",
+      "hint": "Account equity just took a hit",
+      "type": "noul",
+      "instructions": "The trade comes right after a painful stretch for his account, as described in `account_before`: his equity fell clearly over the previous 24 hours or 7 days.",
+      "criteria": {
+        "true": "His account equity fell, fell sharply, or is well below its 30-day peak.",
+        "false": "His account equity was flat or rising, and near its 30-day peak."
+      }
+    },
+    {
+      "key": "boldness",
+      "label": "Boldness",
+      "label_ko": "과감함",
+      "hint": "Size and risk of the trade given the market",
+      "type": "score",
+      "instructions": "How bold is the trade in `action`, given the market in `market_before` and the account in `account_before`?",
+      "criteria": [
+        "Cautious: a small, passive trade that reduces risk.",
+        "Measured: an ordinary-sized trade placed patiently.",
+        "Assertive: a larger trade, or one that adds risk.",
+        "Bold: a large trade that adds risk against a strong move.",
+        "Very bold: a very large, fast trade into a violent market."
+      ]
+    }
+  ]
+}

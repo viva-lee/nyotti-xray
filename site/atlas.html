@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nyotti-xray atlas</title>
+<meta name="description" content="Thirty readings of one published BitMEX trade history (2018-2021): twenty findings re-checked another way and ten new ones, each drawn with dots that are real units of the record. Past records only, not investment advice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="atlas.css">
+</head>
+<body class="at-hero">
+<a class="skip" href="#plates">Skip to the plates</a>
+<header class="top">
+  <a class="mark" href="index.html">nyotti-xray</a>
+  <span class="sect">Atlas</span>
+  <p class="notice" data-t="notice"></p>
+  <nav class="tools" aria-label="Page">
+    <a href="index.html" data-t="replay"></a>
+    <button id="open-index" type="button" data-t="index"></button>
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en">EN</button><button type="button" data-lang="ko">KO</button></div>
+  </nav>
+</header>
+
+<div class="backdrop" aria-hidden="true"></div>
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="frame" aria-hidden="true">
+  <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+  <p class="frame-plate"></p>
+  <p class="frame-unit"></p>
+  <p class="frame-id">aoa, 2018-03-05 to 2021-12-24</p>
+</div>
+<div class="beam" aria-hidden="true"></div>
+<svg id="overlay" aria-hidden="true"></svg>
+<div class="grain" aria-hidden="true"></div>
+<div id="tip" class="tip" role="status" hidden></div>
+
+<main class="column">
+  <section id="hero" class="hero">
+    <div class="hero-copy">
+      <h1 id="hero-title"></h1>
+      <p id="hero-sub"></p>
+      <p id="hero-verdicts"></p>
+      <p class="scroll" data-t="scroll"></p>
+    </div>
+  </section>
+  <p id="no-gl" class="no-gl-note"></p>
+  <div id="plates"></div>
+  <section id="outro" class="summary">
+    <h2 id="summary-title"></h2>
+    <p id="summary-lead"></p>
+    <div id="summary-grid"></div>
+  </section>
+  <section class="about">
+    <h2 id="about-title"></h2>
+    <div id="about"></div>
+  </section>
+  <footer class="foot">
+    <p>aoa_public_2021-12-31_with_letter.zip, SHA-256 b6f1dc7a…d01b9a</p>
+    <p><a href="https://github.com/viva-lee/nyotti-xray">github.com/viva-lee/nyotti-xray</a>, MIT</p>
+  </footer>
+</main>
+
+<dialog id="index" aria-labelledby="index-title">
+  <div class="sheet">
+    <header><h2 id="index-title" data-t="index"></h2><button id="close-index" type="button" data-t="close"></button></header>
+    <div id="index-list"></div>
+  </div>
+</dialog>
+
+<script src="color.js"></script>
+<script src="charts.js"></script>
+<script src="atlas-gl.js"></script>
+<script src="atlas.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nyotti-xray</title>
+<meta name="description" content="A public BitMEX trade history (2018-2021), replayed, checked against the exchange's own tape, and read decision by decision by Jev. Not investment advice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark">NYOTTI</span><span class="slash">//</span><span>X-RAY</span></div>
+  <div class="top-right">
+    <a class="atlas-link" href="atlas.html" data-i18n="atlas">Atlas</a>
+    <span class="chip warn" data-i18n="notAdvice">Unofficial · Past records only · Not investment advice</span>
+    <div class="lang" role="group" aria-label="Language">
+      <button data-lang="en" class="on">EN</button><button data-lang="ko">KO</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <h1 id="headline"></h1>
+      <p class="sub" data-i18n="sub"></p>
+    </div>
+
+    <div class="stage" id="stage">
+      <canvas id="replay" aria-label="Replay of four years of fills over the Bitcoin price"></canvas>
+      <div class="counters" aria-live="off">
+        <div class="date" id="c-date">2018-03-05</div>
+        <div class="counter big"><span id="c-pnl">0.00</span><small>BTC</small><label data-i18n="realised">realised PnL</label></div>
+        <div class="counter"><span id="c-out">0.00</span><small>BTC</small><label data-i18n="withdrawn">withdrawn</label></div>
+        <div class="counter"><span id="c-fills">0</span><label data-i18n="fillsReplayed">fills replayed</label></div>
+      </div>
+      <div class="event" id="event" hidden></div>
+      <div class="tip" id="replay-tip" hidden></div>
+    </div>
+    <div class="controls">
+      <button id="play" class="play" aria-label="Play"><span class="i-play"></span></button>
+      <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Position in time">
+      <div class="speed" role="group" aria-label="Speed">
+        <button data-speed="0.5">½×</button><button data-speed="1" class="on">1×</button><button data-speed="2">2×</button>
+      </div>
+    </div>
+    <div class="legend" id="replay-legend"></div>
+  </section>
+
+  <section class="lens-wrap">
+    <h2 data-i18n="lensTitle">Jev lenses</h2>
+    <p class="lead" data-i18n="lensLead"></p>
+    <div class="lens-bar">
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="filter" role="group" aria-label="Side">
+        <button data-side="all" class="on" data-i18n="all">All</button>
+        <button data-side="1" data-i18n="buys">Buys</button>
+        <button data-side="0" data-i18n="sells">Sells</button>
+      </div>
+    </div>
+    <div class="lens-grid">
+      <div class="lens-plot">
+        <canvas id="lens" aria-label="Every decision over time, colored by the selected Jev lens"></canvas>
+        <div class="lens-legend" id="lens-legend"></div>
+      </div>
+      <aside class="inspect" id="inspect">
+        <div class="empty" data-i18n="inspectEmpty">Hover or tap a dot to see the decision, what Jev was shown, and how it answered.</div>
+      </aside>
+    </div>
+    <div class="checks" id="checks"></div>
+  </section>
+
+  <section class="findings">
+    <h2 data-i18n="findings">Findings</h2>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section class="about">
+    <h2 data-i18n="aboutTitle">What this is, and is not</h2>
+    <div class="about-grid" id="about"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span id="foot-meta"></span>
+  <span><a href="https://github.com/viva-lee/nyotti-xray">github.com/viva-lee/nyotti-xray</a> · MIT</span>
+</footer>
+
+<script src="color.js"></script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
