@@ -6,6 +6,7 @@
 
 <p align="center">
   <b>A famous trader published every fill he made from 2018 to 2021. This replays it, checks it against the exchange's own tape, and has Jev read each decision.</b><br>
+  <a href="https://viva-lee.github.io/nyotti-xray/atlas.html"><b>Open the atlas</b></a> · <a href="https://viva-lee.github.io/nyotti-xray/">Open the replay</a> · in the browser, nothing to install<br>
   Verified, not imitated · no signals · no bot · <a href="README.ko.md">한국어</a>
 </p>
 
@@ -18,7 +19,7 @@ On 2026-09-22 the Korean trader known as **Wonyotti** (BitMEX account `aoa`) rel
 1. **A replay.** Four years of fills fall onto the Bitcoin price in 30 seconds while the realised PnL counts up from 0 to 3,537.32 BTC.
 2. **A proof.** Every fill's trade id is looked up on [BitMEX's public trade tape](https://public.bitmex.com/?prefix=data/trade/), the anonymous record of every trade on the exchange, and checked field by field. **1,439,173 of 1,439,207 fills are on the tape with every field matching**: symbol, price, size, timestamp and maker/taker side, across 1,402 days and 936.6M public trades (35.7 GB). The other 34 are 28 liquidation fills, which go to the liquidation engine instead of the order book, and 3 self-trades where his own orders crossed.
 3. **An x-ray.** Code turns the market and the account at each of his 10,169 Bitcoin decisions into a short English description, and [Jev](https://typesafe.ai) answers eight typed questions about it with calibrated probabilities: what regime the market was in, whether it was panic selling, whether he had just taken a loss, how bold the trade was. A full pass costs about **$0.67** (measured run: 9,594 requests, 15.0M input tokens, $0.63, median 213 ms per request, `jev-1.13.0`).
-4. **An atlas.** Thirty readings of the record on one page (`site/atlas.html`): the twenty original findings, each measured again another way, and ten new ones. 24,000 points re-scan into a new chart for every plate, and every point is a real unit of the record: a day, an order, a decision, a bitcoin.
+4. **An atlas.** Thirty readings of the record on one page ([open it](https://viva-lee.github.io/nyotti-xray/atlas.html), `site/atlas.html`): the twenty original findings, each measured again another way, and ten new ones. 24,000 points re-scan into a new chart for every plate, and every point is a real unit of the record: a day, an order, a decision, a bitcoin.
 
 <p align="center">
   <img src="docs/media/atlas.gif" alt="The atlas: the price silhouette of 10,169 decisions develops under a scan line, then the same points re-scan into unit charts of bitcoins by coin, days by account exposure, and decisions by year" width="100%">
